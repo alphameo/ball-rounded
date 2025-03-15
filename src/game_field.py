@@ -9,6 +9,7 @@ DEFAULT_COLOR_PALLETE: list[Qt.GlobalColor] = [
     Qt.GlobalColor.red,
     Qt.GlobalColor.green,
     Qt.GlobalColor.cyan,
+    Qt.GlobalColor.magenta,
 ]
 
 SELECTION_COLOR: Qt.GlobalColor = Qt.GlobalColor.black
@@ -42,10 +43,8 @@ class GameField(QtGui.QPixmap):
         self.__color_pallete = color_pallete
         self.__game = Game(row_count, col_count, self.color_pallete.__len__())
 
-        self.fill(Qt.GlobalColor.white)
-
         self.__calc_cell_sizes()
-        self.draw()
+        self.repaint()
 
     @property
     def color_pallete(self) -> list[Qt.GlobalColor]:
@@ -82,7 +81,8 @@ class GameField(QtGui.QPixmap):
         self.__cell_height_rad = self.__cell_height / 2
         self.__cell_width_rad = self.__cell_width / 2
 
-    def draw(self) -> None:
+    def repaint(self) -> None:
+        self.fill(Qt.GlobalColor.white)
         painter = QtGui.QPainter(self)
         for r in range(self.row_count):
             for c in range(self.column_count):
@@ -97,7 +97,6 @@ class GameField(QtGui.QPixmap):
         column: int,
         color: Qt.GlobalColor,
         painter: QtGui.QPainter,
-        is_active=False,
     ) -> None:
         x: int = column * self.__mesh_width + self.__cell_height_offset
         y: int = row * self.__mesh_height + self.__cell_width_offset
@@ -113,11 +112,28 @@ class GameField(QtGui.QPixmap):
             self.__cell_height_rad,
         )
 
-        pen_color = SELECTION_COLOR if is_active else color
-        pen: QtGui.QPen = QtGui.QPen(pen_color, 2)
+        pen_color = (
+            SELECTION_COLOR if self.__game.is_selected_cell(row, column) else color
+        )
+        pen: QtGui.QPen = QtGui.QPen(pen_color, 3)
         painter.setPen(pen)
         painter.fillPath(
             path,
             color,
         )
         painter.drawPath(path)
+
+    def deselect_cell(self) -> None:
+        self.__game.deselect_cell()
+
+    def mv_selection_up(self) -> None:
+        self.__game.mv_selection_up()
+
+    def mv_selection_down(self) -> None:
+        self.__game.mv_selection_down()
+
+    def mv_selection_right(self) -> None:
+        self.__game.mv_selection_right()
+
+    def mv_selection_left(self) -> None:
+        self.__game.mv_selection_left()
