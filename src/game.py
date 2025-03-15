@@ -58,20 +58,33 @@ class Game:
         self.__selected_cell[0] = row
         self.__selected_cell[1] = col
 
+    def mv_selection(self, dx: int, dy: int) -> None:
+        if not self.has_selection():
+            self.select_cell(0, 0)
+            return
+
+        try:
+            self.select_cell(self.__selected_cell[0] - dy, self.__selected_cell[1] + dx)
+        except Exception:
+            pass
+
     def mv_selection_up(self) -> None:
-        self.select_cell(self.__selected_cell[0] - 1, self.__selected_cell[1])
+        self.mv_selection(0, 1)
 
     def mv_selection_down(self) -> None:
-        self.select_cell(self.__selected_cell[0] + 1, self.__selected_cell[1])
+        self.mv_selection(0, -1)
 
     def mv_selection_right(self) -> None:
-        self.select_cell(self.__selected_cell[0], self.__selected_cell[1] + 1)
+        self.mv_selection(1, 0)
 
     def mv_selection_left(self) -> None:
-        self.select_cell(self.__selected_cell[0], self.__selected_cell[1] - 1)
+        self.mv_selection(-1, 0)
+
+    def has_selection(self) -> bool:
+        return not (self.__selected_cell[0] < 0 or self.__selected_cell[1] < 0)
 
     def is_selected_cell(self, r: int, c: int) -> bool:
-        if self.__selected_cell[0] < 0 or self.__selected_cell[1] < 0:
+        if not self.has_selection():
             return False
         if (
             (self.__selected_cell[0] == r and self.__selected_cell[1] == c)
