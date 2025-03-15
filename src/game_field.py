@@ -1,7 +1,8 @@
 from PyQt5 import QtGui
 from PyQt5.QtCore import QRectF, Qt
 
-from random import randint
+
+from game import Game
 
 DEFAULT_COLOR_PALLETE: list[Qt.GlobalColor] = [
     Qt.GlobalColor.blue,
@@ -26,7 +27,7 @@ class GameField(QtGui.QPixmap):
     __cell_width_offset: int
     __cell_height_offset: int
 
-    __field: list[list[int]]
+    __game: Game
 
     def __init__(
         self,
@@ -39,11 +40,11 @@ class GameField(QtGui.QPixmap):
         super().__init__(width, height)
 
         self.__color_pallete = color_pallete
+        self.__game = Game(row_count, col_count, self.color_pallete.__len__())
 
         self.fill(Qt.GlobalColor.white)
 
-        self.generate_field(row_count, col_count)
-        # self.draw_something()
+        self.__calc_cell_sizes()
         self.draw()
 
     @property
@@ -60,14 +61,15 @@ class GameField(QtGui.QPixmap):
             raise TypeError("color_pallete should be of type list[Qt.GlobalColor]")
 
         self.__color_pallete = color_pallete
+        self.__game.cell_types_count = color_pallete.__len__()
 
     @property
     def column_count(self) -> int:
-        return len(self.__field[0])
+        return self.__game.column_count
 
     @property
     def row_count(self) -> int:
-        return len(self.__field)
+        return self.__game.row_count
 
     def __calc_cell_sizes(self) -> None:
         self.__mesh_width = int(self.width() / self.column_count)
@@ -80,26 +82,13 @@ class GameField(QtGui.QPixmap):
         self.__cell_height_rad = self.__cell_height / 2
         self.__cell_width_rad = self.__cell_width / 2
 
-    def generate_field(self, row_count, col_count):
-        if row_count <= 0:
-            raise ValueError("col_count should be > 0")
-
-        if col_count <= 0:
-            raise ValueError("row_count should be > 0")
-
-        self.__field = list()
-        for r in range(row_count):
-            self.__field.append(list())
-            for c in range(col_count):
-                self.__field[r].append(randint(0, self.color_pallete.__len__() - 1))
-
-        self.__calc_cell_sizes()
-
     def draw(self) -> None:
         painter = QtGui.QPainter(self)
         for r in range(self.row_count):
             for c in range(self.column_count):
-                self.__draw_cell(r, c, self.color_pallete[self.__field[r][c]], painter)
+                self.__draw_cell(
+                    r, c, self.color_pallete[self.__game.cell_type(r, c)], painter
+                )
         painter.end()
 
     def __draw_cell(
@@ -109,7 +98,7 @@ class GameField(QtGui.QPixmap):
         color: Qt.GlobalColor,
         painter: QtGui.QPainter,
         is_active=False,
-    ):
+    ) -> None:
         x: int = column * self.__mesh_width + self.__cell_height_offset
         y: int = row * self.__mesh_height + self.__cell_width_offset
         path = QtGui.QPainterPath()
