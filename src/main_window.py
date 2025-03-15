@@ -9,6 +9,6 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__()
 
         self.label: QtWidgets.QLabel = QtWidgets.QLabel()
-        game_field: GameField = GameField(width, height)
-        self.label.setPixmap(game_field)
+        field: GameField = GameField(width, height)
+        self.label.setPixmap(field)
         self.setCentralWidget(self.label)
