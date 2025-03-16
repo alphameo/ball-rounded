@@ -5,17 +5,17 @@ from PyQt5.QtCore import QRectF, Qt
 from game import Game
 
 DEFAULT_COLOR_PALLETE: list[Qt.GlobalColor] = [
+    Qt.GlobalColor.magenta,
     Qt.GlobalColor.blue,
     Qt.GlobalColor.red,
     Qt.GlobalColor.green,
     Qt.GlobalColor.cyan,
-    Qt.GlobalColor.magenta,
 ]
 
 SELECTION_COLOR: Qt.GlobalColor = Qt.GlobalColor.black
 
 
-class GameField(QtGui.QPixmap):
+class GameRenderer(QtGui.QPixmap):
     __color_pallete: list[Qt.GlobalColor]
 
     __mesh_width: int
@@ -34,14 +34,13 @@ class GameField(QtGui.QPixmap):
         self,
         width: int,
         height: int,
-        row_count=10,
-        col_count=6,
+        game: Game,
         color_pallete=DEFAULT_COLOR_PALLETE,
     ):
         super().__init__(width, height)
 
-        self.__color_pallete = color_pallete
-        self.__game = Game(row_count, col_count, self.color_pallete.__len__())
+        self.__game = game
+        self.color_pallete = color_pallete
 
         self.__calc_cell_sizes()
         self.repaint()
@@ -59,16 +58,20 @@ class GameField(QtGui.QPixmap):
         ):
             raise TypeError("color_pallete should be of type list[Qt.GlobalColor]")
 
+        if color_pallete.__len__() < self.game.cell_types_count:
+            raise ValueError(
+                "count of colors in color_pallete < count of game color types"
+            )
+
         self.__color_pallete = color_pallete
-        self.__game.cell_types_count = color_pallete.__len__()
 
     @property
     def column_count(self) -> int:
-        return self.__game.column_count
+        return self.game.column_count
 
     @property
     def row_count(self) -> int:
-        return self.__game.row_count
+        return self.game.row_count
 
     @property
     def game(self) -> Game:
@@ -91,7 +94,7 @@ class GameField(QtGui.QPixmap):
         for r in range(self.row_count):
             for c in range(self.column_count):
                 self.__draw_cell(
-                    r, c, self.color_pallete[self.__game.cell_type(r, c)], painter
+                    r, c, self.color_pallete[self.game.cell_type(r, c)], painter
                 )
         painter.end()
 
@@ -117,7 +120,7 @@ class GameField(QtGui.QPixmap):
         )
 
         pen_color = (
-            SELECTION_COLOR if self.__game.is_selected_cell(row, column) else color
+            SELECTION_COLOR if self.game.is_selected_cell(row, column) else color
         )
         pen: QtGui.QPen = QtGui.QPen(pen_color, 3)
         painter.setPen(pen)
