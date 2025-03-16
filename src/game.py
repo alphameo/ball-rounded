@@ -2,11 +2,18 @@ from random import randint
 
 
 class Game:
+    class __Cell:
+        row: int
+        col: int
+
+        def __init__(self, row: int, col: int) -> None:
+            self.row = row
+            self.col = col
+
     __field: list[list[int]]
     __cell_types_count: int
 
-    __selected_cell_row: int = 0
-    __selected_cell_col: int = 0
+    __selected_cell: __Cell = __Cell(0, 0)
 
     def __init__(self, row_count=10, col_count=6, cell_types_count=1):
         self.cell_types_count = cell_types_count
@@ -47,8 +54,8 @@ class Game:
                 self.__field[r].append(randint(0, self.cell_types_count - 1))
 
     def deselect_cell(self) -> None:
-        self.__selected_cell_row = -1
-        self.__selected_cell_col = -1
+        self.__selected_cell.row = -1
+        self.__selected_cell.col = -1
 
     def select_cell(self, row: int, col: int) -> None:
         if row < 0 or row >= self.row_count - 1:
@@ -56,8 +63,8 @@ class Game:
         if col < 0 or col >= self.column_count - 1:
             raise ValueError("col is out of field")
 
-        self.__selected_cell_row = row
-        self.__selected_cell_col = col
+        self.__selected_cell.row = row
+        self.__selected_cell.col = col
 
     def mv_selection(self, dx: int, dy: int) -> None:
         if not self.has_selection():
@@ -66,7 +73,7 @@ class Game:
 
         try:
             self.select_cell(
-                self.__selected_cell_row - dy, self.__selected_cell_col + dx
+                self.__selected_cell.row - dy, self.__selected_cell.col + dx
             )
         except Exception:
             pass
@@ -84,23 +91,23 @@ class Game:
         self.mv_selection(-1, 0)
 
     def has_selection(self) -> bool:
-        return not (self.__selected_cell_row < 0 or self.__selected_cell_col < 0)
+        return not (self.__selected_cell.row < 0 or self.__selected_cell.col < 0)
 
     def is_selected_cell(self, r: int, c: int) -> bool:
         if not self.has_selection():
             return False
         if (
-            (self.__selected_cell_row == r and self.__selected_cell_col == c)
-            or (self.__selected_cell_row + 1 == r and self.__selected_cell_col == c)
-            or (self.__selected_cell_row == r and self.__selected_cell_col + 1 == c)
-            or (self.__selected_cell_row + 1 == r and self.__selected_cell_col + 1 == c)
+            (self.__selected_cell.row == r and self.__selected_cell.col == c)
+            or (self.__selected_cell.row + 1 == r and self.__selected_cell.col == c)
+            or (self.__selected_cell.row == r and self.__selected_cell.col + 1 == c)
+            or (self.__selected_cell.row + 1 == r and self.__selected_cell.col + 1 == c)
         ):
             return True
         return False
 
     def rotate_selection_counterclockwise(self) -> None:
-        r: int = self.__selected_cell_row
-        c: int = self.__selected_cell_col
+        r: int = self.__selected_cell.row
+        c: int = self.__selected_cell.col
         f: list[list[int]] = self.__field
 
         f[r][c], f[r + 1][c], f[r + 1][c + 1], f[r][c + 1] = (
@@ -111,8 +118,8 @@ class Game:
         )
 
     def rotate_selection_clockwise(self) -> None:
-        r: int = self.__selected_cell_row
-        c: int = self.__selected_cell_col
+        r: int = self.__selected_cell.row
+        c: int = self.__selected_cell.col
         f: list[list[int]] = self.__field
 
         f[r][c], f[r + 1][c], f[r + 1][c + 1], f[r][c + 1] = (
@@ -121,4 +128,3 @@ class Game:
             f[r + 1][c],
             f[r + 1][c + 1],
         )
-
