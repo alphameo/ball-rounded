@@ -97,3 +97,28 @@ class Game:
         ):
             return True
         return False
+
+    def rotate_selection_counterclockwise(self) -> None:
+        r: int = self.__selected_cell_row
+        c: int = self.__selected_cell_col
+        f: list[list[int]] = self.__field
+
+        f[r][c], f[r + 1][c], f[r + 1][c + 1], f[r][c + 1] = (
+            f[r + 1][c],
+            f[r + 1][c + 1],
+            f[r][c + 1],
+            f[r][c],
+        )
+
+    def rotate_selection_clockwise(self) -> None:
+        r: int = self.__selected_cell_row
+        c: int = self.__selected_cell_col
+        f: list[list[int]] = self.__field
+
+        f[r][c], f[r + 1][c], f[r + 1][c + 1], f[r][c + 1] = (
+            f[r][c + 1],
+            f[r][c],
+            f[r + 1][c],
+            f[r + 1][c + 1],
+        )
+

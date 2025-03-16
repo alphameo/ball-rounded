@@ -18,20 +18,26 @@ class MainWindow(QMainWindow):
 
     def keyPressEvent(self, event) -> None:
         g: Game = self.__game_window.game
-        if event.key() == Qt.Key_Escape:
+        if event.key() == Qt.Key.Key_Escape:
             g.deselect_cell()
             self.upd()
-        if event.key() == Qt.Key_W:
+        if event.key() == Qt.Key.Key_W:
             g.mv_selection_up()
             self.upd()
-        if event.key() == Qt.Key_S:
+        if event.key() == Qt.Key.Key_S:
             g.mv_selection_down()
             self.upd()
-        if event.key() == Qt.Key_A:
+        if event.key() == Qt.Key.Key_A:
             g.mv_selection_left()
             self.upd()
-        if event.key() == Qt.Key_D:
+        if event.key() == Qt.Key.Key_D:
             g.mv_selection_right()
+            self.upd()
+        if event.key() == Qt.Key.Key_E:
+            g.rotate_selection_counterclockwise()
+            self.upd()
+        if event.key() == Qt.Key.Key_Q:
+            g.rotate_selection_clockwise()
             self.upd()
 
     def upd(self):
