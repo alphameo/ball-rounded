@@ -7,7 +7,7 @@ class Game:
 
     __selected_cell: list[int] = [0, 0]
 
-    def __init__(self, row_count: int, col_count: int, cell_types_count: int):
+    def __init__(self, row_count=10, col_count=6, cell_types_count=1):
         self.cell_types_count = cell_types_count
         self.generate_field(row_count, col_count)
 
