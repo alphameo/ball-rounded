@@ -1,8 +1,9 @@
+from copyreg import constructor
 from PyQt5 import QtGui
 from PyQt5.QtCore import QRectF, Qt
 
 
-from game import Game
+from game import Cell, Game
 
 DEFAULT_COLOR_PALLETE: list[Qt.GlobalColor] = [
     Qt.GlobalColor.magenta,
@@ -92,11 +93,14 @@ class GameRenderer(QtGui.QPixmap):
         self.__cell_width_rad = self.__cell_width / 2
 
     def repaint(self) -> None:
+        non_existant = self.game.scan_destruction_select()
         self.__validate_colors(self.color_pallete)
         self.fill(Qt.GlobalColor.white)
         painter = QtGui.QPainter(self)
         for r in range(self.row_count):
             for c in range(self.column_count):
+                if Cell(r, c) in non_existant:
+                    continue
                 self.__draw_cell(
                     r, c, self.color_pallete[self.game.cell_type(r, c)], painter
                 )

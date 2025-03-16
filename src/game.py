@@ -1,19 +1,37 @@
 from random import randint
 
 
-class Game:
-    class __Cell:
-        row: int
-        col: int
+class Cell:
+    row: int
+    col: int
 
-        def __init__(self, row: int, col: int) -> None:
-            self.row = row
-            self.col = col
+    def __init__(self, row: int, col: int) -> None:
+        self.row = row
+        self.col = col
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, self.__class__):
+            return False
+        if self.row == other.row and self.col == other.col:
+            return True
+        return False
+
+    def __hash__(self) -> int:
+        return hash((self.row, self.col))
+
+    def __str__(self) -> str:
+        return f"Cell(r={self.row}, c={self.col})"
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
+class Game:
 
     __field: list[list[int]]
     __cell_types_count: int
 
-    __selected_cell: __Cell = __Cell(0, 0)
+    __selected_cell: Cell = Cell(0, 0)
 
     def __init__(self, row_count=10, col_count=6, cell_types_count=1):
         self.cell_types_count = cell_types_count
@@ -128,3 +146,54 @@ class Game:
             f[r + 1][c],
             f[r + 1][c + 1],
         )
+
+    def __cell_neighbours(self, cell: Cell) -> list:
+        neighbours: list[Cell] = list()
+
+        if cell.row > 0:
+            neighbours.append(Cell(cell.row - 1, cell.col))
+        if cell.col > 0:
+            neighbours.append(Cell(cell.row, cell.col - 1))
+        if cell.row < self.row_count - 1:
+            neighbours.append(Cell(cell.row + 1, cell.col))
+        if cell.col < self.column_count:
+            neighbours.append(Cell(cell.row, cell.col + 1))
+
+        return neighbours
+
+    def __selection(self) -> list[Cell]:
+        selection: list[Cell] = [self.__selected_cell]
+        selection.append(Cell(self.__selected_cell.row + 1, self.__selected_cell.col))
+        selection.append(
+            Cell(self.__selected_cell.row + 1, self.__selected_cell.col + 1)
+        )
+        selection.append(Cell(self.__selected_cell.row, self.__selected_cell.col + 1))
+
+        return selection
+
+    def __same_cell_colors(self, cell1: Cell, cell2: Cell) -> bool:
+        return self.__field[cell1.row][cell1.col] == self.__field[cell2.row][cell2.col]
+
+    def scan_add_destruction_cell(
+        self, root_cell: Cell, candidates: set[Cell]
+    ) -> set[Cell]:
+        stack: list[Cell] = [root_cell]
+        while stack.__len__() > 0:
+            cell: Cell = stack.pop()
+            if cell in candidates:
+                continue
+
+            candidates.add(cell)
+            for neighbour in self.__cell_neighbours(cell):
+                if neighbour not in candidates and self.__same_cell_colors(
+                    neighbour, cell
+                ):
+                    stack.append(neighbour)
+        return candidates
+
+    def scan_destruction_select(self) -> set[Cell]:
+        candidates: set[Cell] = set()
+        for selection_cell in self.__selection():
+            self.scan_add_destruction_cell(selection_cell, candidates)
+
+        return candidates
