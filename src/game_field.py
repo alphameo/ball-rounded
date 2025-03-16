@@ -70,6 +70,10 @@ class GameField(QtGui.QPixmap):
     def row_count(self) -> int:
         return self.__game.row_count
 
+    @property
+    def game(self) -> Game:
+        return self.__game
+
     def __calc_cell_sizes(self) -> None:
         self.__mesh_width = int(self.width() / self.column_count)
         self.__mesh_height = int(self.height() / self.row_count)
@@ -122,18 +126,3 @@ class GameField(QtGui.QPixmap):
             color,
         )
         painter.drawPath(path)
-
-    def deselect_cell(self) -> None:
-        self.__game.deselect_cell()
-
-    def mv_selection_up(self) -> None:
-        self.__game.mv_selection_up()
-
-    def mv_selection_down(self) -> None:
-        self.__game.mv_selection_down()
-
-    def mv_selection_right(self) -> None:
-        self.__game.mv_selection_right()
-
-    def mv_selection_left(self) -> None:
-        self.__game.mv_selection_left()
