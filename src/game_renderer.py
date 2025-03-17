@@ -1,4 +1,4 @@
-from copyreg import constructor
+import util.utils as utl
 from PyQt5 import QtGui
 from PyQt5.QtCore import QRectF, Qt
 
@@ -94,6 +94,9 @@ class GameRenderer(QtGui.QPixmap):
 
     def repaint(self) -> None:
         non_existant = self.game.detect_selection_clusters()
+
+        utl.merge_set(non_existant, self.game.detect_field_clusters())
+
         self.__validate_colors(self.color_pallete)
         self.fill(Qt.GlobalColor.white)
         painter = QtGui.QPainter(self)
