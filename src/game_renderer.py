@@ -69,6 +69,10 @@ class GameRenderer(QtGui.QPixmap):
                 "count of colors in color_pallete < count of game color types"
             )
 
+    def __cell_color(self, r: int, c: int) -> Qt.GlobalColor | None:
+        cell_type: int = self.game.cell_type(r, c)
+        return self.color_pallete[cell_type] if cell_type >= 0 else None
+
     @property
     def column_count(self) -> int:
         return self.game.column_count
@@ -93,20 +97,14 @@ class GameRenderer(QtGui.QPixmap):
         self.__cell_width_rad = self.__cell_width / 2
 
     def repaint(self) -> None:
-        non_existant = self.game.detect_selection_clusters()
-
-        utl.merge_set(non_existant, self.game.detect_field_clusters())
+        self.game.destroy_field_clusters()
 
         self.__validate_colors(self.color_pallete)
         self.fill(Qt.GlobalColor.white)
         painter = QtGui.QPainter(self)
         for r in range(self.row_count):
             for c in range(self.column_count):
-                color = (
-                    None
-                    if Cell(r, c) in non_existant
-                    else self.color_pallete[self.game.cell_type(r, c)]
-                )
+                color = self.__cell_color(r, c)
                 self.__draw_cell(r, c, color, painter)
         painter.end()
 

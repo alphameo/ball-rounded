@@ -2,7 +2,8 @@ from random import randint
 
 import util.utils as utl
 
-CLUSTER_SIZE:int = 3
+CLUSTER_SIZE: int = 3
+
 
 class Cell:
     row: int
@@ -182,7 +183,7 @@ class Game:
         stack: list[Cell] = [root_cell]
         while stack.__len__() > 0:
             cell: Cell = stack.pop()
-            if cell in candidates:
+            if cell in candidates or self.cell_type(cell.row, cell.col) < 0:
                 continue
 
             candidates.add(cell)
@@ -193,6 +194,19 @@ class Game:
                     stack.append(neighbour)
         return candidates
 
+    def destroy_cluster(self, root_cell: Cell) -> None:
+        cluster: set[Cell] = self.detect_cluster(root_cell)
+        if cluster.__len__() < CLUSTER_SIZE:
+            return
+
+        for cell in cluster:
+            self.__field[cell.row][cell.col] = -1
+
+    def destroy_selection_clusters(self) -> None:
+        for selection_cell in self.__selection():
+            self.destroy_cluster(selection_cell)
+
+    # INFO: deprecated
     def detect_selection_clusters(self) -> set[Cell]:
         collector: set[Cell] = set()
         for selection_cell in self.__selection():
@@ -202,6 +216,7 @@ class Game:
 
         return collector
 
+    # INFO: deprecated
     def detect_field_clusters(self) -> set[Cell]:
         collector: set[Cell] = set()
         for r in range(self.row_count):
@@ -211,3 +226,8 @@ class Game:
                     utl.merge_set(collector, candidates)
 
         return collector
+
+    def destroy_field_clusters(self) -> None:
+        for r in range(self.row_count):
+            for c in range(self.column_count):
+                self.destroy_cluster(Cell(r, c))
