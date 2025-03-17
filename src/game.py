@@ -176,7 +176,7 @@ class Game:
     def __same_cell_colors(self, cell1: Cell, cell2: Cell) -> bool:
         return self.__field[cell1.row][cell1.col] == self.__field[cell2.row][cell2.col]
 
-    def scan_add_destruction_cell(self, root_cell: Cell) -> set[Cell]:
+    def detect_cell_destructable(self, root_cell: Cell) -> set[Cell]:
         candidates: set[Cell] = set()
         stack: list[Cell] = [root_cell]
         while stack.__len__() > 0:
@@ -192,10 +192,10 @@ class Game:
                     stack.append(neighbour)
         return candidates
 
-    def scan_destruction_select(self) -> set[Cell]:
+    def detect_selection_destruction(self) -> set[Cell]:
         collector: set[Cell] = set()
         for selection_cell in self.__selection():
-            candidates: set[Cell] = self.scan_add_destruction_cell(selection_cell)
+            candidates: set[Cell] = self.detect_cell_destructable(selection_cell)
             if candidates.__len__() >= 3:
                 utl.merge_set(collector, candidates)
 
