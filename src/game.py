@@ -156,7 +156,7 @@ class Game:
             neighbours.append(Cell(cell.row, cell.col - 1))
         if cell.row < self.row_count - 1:
             neighbours.append(Cell(cell.row + 1, cell.col))
-        if cell.col < self.column_count:
+        if cell.col < self.column_count - 1:
             neighbours.append(Cell(cell.row, cell.col + 1))
 
         return neighbours
