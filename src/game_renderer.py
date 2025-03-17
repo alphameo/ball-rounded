@@ -93,24 +93,25 @@ class GameRenderer(QtGui.QPixmap):
         self.__cell_width_rad = self.__cell_width / 2
 
     def repaint(self) -> None:
-        non_existant = self.game.scan_destruction_select()
+        non_existant = self.game.detect_selection_destruction()
         self.__validate_colors(self.color_pallete)
         self.fill(Qt.GlobalColor.white)
         painter = QtGui.QPainter(self)
         for r in range(self.row_count):
             for c in range(self.column_count):
-                if Cell(r, c) in non_existant:
-                    continue
-                self.__draw_cell(
-                    r, c, self.color_pallete[self.game.cell_type(r, c)], painter
+                color = (
+                    None
+                    if Cell(r, c) in non_existant
+                    else self.color_pallete[self.game.cell_type(r, c)]
                 )
+                self.__draw_cell(r, c, color, painter)
         painter.end()
 
     def __draw_cell(
         self,
         row: int,
         column: int,
-        color: Qt.GlobalColor,
+        color: Qt.GlobalColor | None,
         painter: QtGui.QPainter,
     ) -> None:
         x: int = column * self.__mesh_width + self.__cell_height_offset
@@ -127,13 +128,14 @@ class GameRenderer(QtGui.QPixmap):
             self.__cell_height_rad,
         )
 
-        pen_color = (
-            SELECTION_COLOR if self.game.is_selected_cell(row, column) else color
-        )
-        pen: QtGui.QPen = QtGui.QPen(pen_color, 3)
-        painter.setPen(pen)
-        painter.fillPath(
-            path,
-            color,
-        )
-        painter.drawPath(path)
+        if color is not None:
+            painter.fillPath(
+                path,
+                color,
+            )
+
+        if self.game.is_selected_cell(row, column):
+            pen_color = SELECTION_COLOR
+            pen: QtGui.QPen = QtGui.QPen(pen_color, 3)
+            painter.setPen(pen)
+            painter.drawPath(path)
