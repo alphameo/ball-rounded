@@ -93,7 +93,7 @@ class GameRenderer(QtGui.QPixmap):
         self.__cell_width_rad = self.__cell_width / 2
 
     def repaint(self) -> None:
-        non_existant = self.game.detect_selection_destruction()
+        non_existant = self.game.detect_selection_clusters()
         self.__validate_colors(self.color_pallete)
         self.fill(Qt.GlobalColor.white)
         painter = QtGui.QPainter(self)
