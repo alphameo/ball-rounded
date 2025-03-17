@@ -1,5 +1,7 @@
 from random import randint
 
+import util.utils as utl
+
 
 class Cell:
     row: int
@@ -174,9 +176,8 @@ class Game:
     def __same_cell_colors(self, cell1: Cell, cell2: Cell) -> bool:
         return self.__field[cell1.row][cell1.col] == self.__field[cell2.row][cell2.col]
 
-    def scan_add_destruction_cell(
-        self, root_cell: Cell, candidates: set[Cell]
-    ) -> set[Cell]:
+    def scan_add_destruction_cell(self, root_cell: Cell) -> set[Cell]:
+        candidates: set[Cell] = set()
         stack: list[Cell] = [root_cell]
         while stack.__len__() > 0:
             cell: Cell = stack.pop()
@@ -192,8 +193,10 @@ class Game:
         return candidates
 
     def scan_destruction_select(self) -> set[Cell]:
-        candidates: set[Cell] = set()
+        collector: set[Cell] = set()
         for selection_cell in self.__selection():
-            self.scan_add_destruction_cell(selection_cell, candidates)
+            candidates: set[Cell] = self.scan_add_destruction_cell(selection_cell)
+            if candidates.__len__() >= 3:
+                utl.merge_set(collector, candidates)
 
-        return candidates
+        return collector
