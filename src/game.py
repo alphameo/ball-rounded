@@ -194,17 +194,20 @@ class Game:
                     stack.append(neighbour)
         return candidates
 
-    def destroy_cluster(self, root_cell: Cell) -> None:
+    def destroy_cluster(self, root_cell: Cell) -> int:
         cluster: set[Cell] = self.detect_cluster(root_cell)
         if cluster.__len__() < CLUSTER_SIZE:
-            return
+            return 0
 
         for cell in cluster:
             self.__field[cell.row][cell.col] = -1
+        return cluster.__len__()
 
-    def destroy_selection_clusters(self) -> None:
+    def destroy_selection_clusters(self) -> int:
+        destructions: int = 0
         for selection_cell in self.__selection():
-            self.destroy_cluster(selection_cell)
+            destructions += self.destroy_cluster(selection_cell)
+        return destructions
 
     # INFO: deprecated
     def detect_selection_clusters(self) -> set[Cell]:
@@ -227,7 +230,10 @@ class Game:
 
         return collector
 
-    def destroy_field_clusters(self) -> None:
+    def destroy_field_clusters(self) -> int:
+        destructions: int = 0
         for r in range(self.row_count):
             for c in range(self.column_count):
-                self.destroy_cluster(Cell(r, c))
+                destructions += self.destroy_cluster(Cell(r, c))
+
+        return destructions
