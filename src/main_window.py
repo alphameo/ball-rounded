@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QLabel
-from PyQt5.QtCore import Qt
-from game import Game
+from PyQt5.QtCore import QTimer, Qt
+from game import Cell, Game
 from game_renderer import GameRenderer
 
 
@@ -12,6 +12,7 @@ class MainWindow(QMainWindow):
 
         self.label: QLabel = QLabel()
         self.__game_window = GameRenderer(width, height, Game(cell_types_count=4))
+        # print(self.__game_window.game.destroy_field_clusters())
 
         self.label.setPixmap(self.__game_window)
         self.setCentralWidget(self.label)
@@ -39,7 +40,40 @@ class MainWindow(QMainWindow):
         if event.key() == Qt.Key.Key_Q:
             g.rotate_selection_clockwise()
             self.upd()
+        if event.key() == Qt.Key.Key_X:
+            print(self.__game_window.game.destroy_field_clusters())
+            self.upd()
+        if event.key() == Qt.Key.Key_C:
+            print(g.ascend_rows())
+            self.upd()
+        if event.key() == Qt.Key.Key_Z:
+            self.destruction_loop(0.2)
+        # if event.key() == Qt.Key.Key_L:
+        #     while True:
+        #         t.sleep(0.2)
+        #         print(1)
+
+
+    # INFO: inner func instead of while loop because event loop blocking
+    def destruction_loop(self, time_sleep: float) -> None:
+        destroyed = self.__game_window.game.destroy_field_clusters()
+        self.upd()
+        print(f"start: {destroyed=}")
+
+        def update_and_check():
+            nonlocal destroyed
+            destroyed -= self.__game_window.game.ascend_rows()
+            self.upd()
+            print(destroyed)
+
+            if destroyed <= 0:
+                self.timer.stop()
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(update_and_check)
+        self.timer.start(int(time_sleep * 1000))
 
     def upd(self):
+        # print(self.__game_window.game.destroy_field_clusters())
         self.__game_window.repaint()
         self.label.setPixmap(self.__game_window)
