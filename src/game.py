@@ -73,7 +73,10 @@ class Game:
         for r in range(row_count):
             self.__field.append(list())
             for c in range(col_count):
-                self.__field[r].append(randint(0, self.cell_types_count - 1))
+                self.__field[r].append(self.generate_type())
+
+    def generate_type(self) -> int:
+        return randint(0, self.cell_types_count - 1)
 
     def deselect_cell(self) -> None:
         self.__selected_cell.row = -1
@@ -237,3 +240,19 @@ class Game:
                 destructions += self.destroy_cluster(Cell(r, c))
 
         return destructions
+
+    def ascend_rows(self) -> int:
+        falling_columns_count: int = 0
+        for col in range(self.column_count):
+            for row in range(self.row_count - 1, 0, -1):
+                if self.cell_type(row, col) >= 0:
+                    continue
+                falling_columns_count += 1
+
+                for r in range(row, 0, -1):
+                    self.__field[r][col] = self.__field[r - 1][col]
+
+                self.__field[0][col] = self.generate_type()
+                break
+
+        return falling_columns_count
