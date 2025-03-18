@@ -1,9 +1,8 @@
-import util.utils as utl
 from PyQt5 import QtGui
 from PyQt5.QtCore import QRectF, Qt
 
 
-from game import Cell, Game
+from game import Game
 
 DEFAULT_COLOR_PALLETE: list[Qt.GlobalColor] = [
     Qt.GlobalColor.magenta,
@@ -44,6 +43,7 @@ class GameRenderer(QtGui.QPixmap):
         self.color_pallete = color_pallete
 
         self.__calc_cell_sizes()
+
         self.repaint()
 
     @property
@@ -97,8 +97,6 @@ class GameRenderer(QtGui.QPixmap):
         self.__cell_width_rad = self.__cell_width / 2
 
     def repaint(self) -> None:
-        print(self.game.destroy_field_clusters())
-
         self.__validate_colors(self.color_pallete)
         self.fill(Qt.GlobalColor.white)
         painter = QtGui.QPainter(self)
