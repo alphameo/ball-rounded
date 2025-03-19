@@ -48,10 +48,8 @@ class Game:
             destroyed -= self.ascend_rows()
             while destroyed > 0:
                 destroyed -= self.ascend_rows()
-                print(destroyed)
             i += 1
             destroyed = self.destroy_field_clusters()
-        print(i)
 
     @property
     def cell_types_count(self) -> int:
@@ -210,6 +208,7 @@ class Game:
         return candidates
 
     def destroy_cluster(self, root_cell: Cell) -> int:
+        "returns count of destructed cells"
         cluster: set[Cell] = self.detect_cluster(root_cell)
         if cluster.__len__() < CLUSTER_SIZE:
             return 0
@@ -219,6 +218,7 @@ class Game:
         return cluster.__len__()
 
     def destroy_selection_clusters(self) -> int:
+        "returns count of destructed cells"
         destructions: int = 0
         for selection_cell in self.__selection():
             destructions += self.destroy_cluster(selection_cell)
@@ -246,6 +246,7 @@ class Game:
         return collector
 
     def destroy_field_clusters(self) -> int:
+        "returns count of destructed cells"
         destructions: int = 0
         for r in range(self.row_count):
             for c in range(self.column_count):
@@ -254,6 +255,7 @@ class Game:
         return destructions
 
     def ascend_rows(self) -> int:
+        "returns count of ascended columns"
         falling_columns_count: int = 0
         for col in range(self.column_count):
             for row in range(self.row_count - 1, -1, -1):
