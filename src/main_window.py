@@ -21,31 +21,40 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.label)
 
     def keyPressEvent(self, event) -> None:
-        if self.__timer.isActive():
-            return
 
         g: Game = self.__game_window.game
         if event.key() == Qt.Key.Key_Escape:
             g.deselect_cell()
             self.upd()
+            return
         if event.key() == Qt.Key.Key_W:
             g.mv_selection_up()
             self.upd()
+            return
         if event.key() == Qt.Key.Key_S:
             g.mv_selection_down()
             self.upd()
+            return
         if event.key() == Qt.Key.Key_A:
             g.mv_selection_left()
             self.upd()
+            return
         if event.key() == Qt.Key.Key_D:
             g.mv_selection_right()
             self.upd()
+            return
+
+        if self.__timer.isActive():
+            return
+
         if event.key() == Qt.Key.Key_E:
             g.rotate_selection_counterclockwise()
             self.animated_destruction(300)
+            return
         if event.key() == Qt.Key.Key_Q:
             g.rotate_selection_clockwise()
             self.animated_destruction(300)
+            return
 
     def animated_destruction(self, time_sleep_ms: int) -> None:
         self.upd()
