@@ -34,6 +34,7 @@ class Game:
 
     __field: list[list[int]]
     __cell_types_count: int
+    __destructed: int = 0
 
     __selected_cell: Cell = Cell(0, 0)
 
@@ -50,6 +51,8 @@ class Game:
                 destroyed -= self.ascend_rows()
             i += 1
             destroyed = self.destroy_field_clusters()
+
+        self.__destructed = 0
 
     @property
     def cell_types_count(self) -> int:
@@ -68,6 +71,10 @@ class Game:
     @property
     def row_count(self) -> int:
         return len(self.__field)
+
+    @property
+    def quant_destructions(self) -> int:
+        return self.__destructed
 
     def cell_type(self, row: int, col: int) -> int:
         return self.__field[row][col]
@@ -215,6 +222,8 @@ class Game:
 
         for cell in cluster:
             self.__field[cell.row][cell.col] = -1
+
+        self.__destructed += cluster.__len__()
         return cluster.__len__()
 
     def destroy_selection_clusters(self) -> int:
