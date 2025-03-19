@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QEventLoop, Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QLabel, QMainWindow
 
 from game import Game
@@ -12,9 +12,10 @@ class MainWindow(QMainWindow):
     def __init__(self, width=300, height=500) -> None:
         super().__init__()
 
+        game: Game = Game(cell_types_count=4)
+        game.shuffle_field(100)
         self.label: QLabel = QLabel()
-        self.__game_window = GameRenderer(width, height, Game(cell_types_count=4))
-        # print(self.__game_window.game.destroy_field_clusters())
+        self.__game_window = GameRenderer(width, height, game)
 
         self.label.setPixmap(self.__game_window)
         self.setCentralWidget(self.label)
@@ -46,41 +47,32 @@ class MainWindow(QMainWindow):
             g.rotate_selection_clockwise()
             self.animated_destruction(300)
 
-    # INFO: inner func instead of while loop because event loop blocking
     def animated_destruction(self, time_sleep_ms: int) -> None:
         self.upd()
         destroyed = self.__game_window.game.destroy_field_clusters()
+        QTimer.singleShot(time_sleep_ms * 3, self.upd)
         self.animate_ascending(destroyed, time_sleep_ms)
 
-
-        # def animation() -> None:
-        #     nonlocal destroyed
-        #     self.animate_ascending(destroyed, time_sleep_ms)
-        #     destroyed = self.__game_window.game.destroy_field_clusters()
-        #     if destroyed <= 0:
-        #         loop.quit()
-        #     else:
-        #         QTimer.singleShot(time_sleep_ms * 2, animation)
-        #
-        # loop = QEventLoop()
-        # QTimer.singleShot(time_sleep_ms * 2, animation)
-        # loop.exec_()
-        # def destruction_loop(self, time_sleep: int) -> None:
-
+    # INFO: timer instead of while loop because event loop blocking
     def animate_ascending(self, destroyed: int, time_sleep_ms: int) -> None:
         def animation_frame():
             nonlocal destroyed
+            if destroyed <= 0:
+                self.__timer.stop()
+                return
+
             destroyed -= self.__game_window.game.ascend_rows()
             self.upd()
 
             if destroyed <= 0:
-                self.__timer.stop()
+                self.animate_ascending(
+                    self.__game_window.game.destroy_field_clusters(), time_sleep_ms
+                )
 
         self.__timer = QTimer()
         self.__timer.timeout.connect(animation_frame)
         self.__timer.start(time_sleep_ms)
 
     def upd(self):
-        # print(self.__game_window.game.destroy_field_clusters())
         self.__game_window.repaint()
         self.label.setPixmap(self.__game_window)
