@@ -41,6 +41,18 @@ class Game:
         self.cell_types_count = cell_types_count
         self.generate_field(row_count, col_count)
 
+    def shuffle_field(self, max_iterations: int):
+        i: int = 0
+        destroyed = self.destroy_field_clusters()
+        while destroyed > 0 and i <= max_iterations:
+            destroyed -= self.ascend_rows()
+            while destroyed > 0:
+                destroyed -= self.ascend_rows()
+                print(destroyed)
+            i += 1
+            destroyed = self.destroy_field_clusters()
+        print(i)
+
     @property
     def cell_types_count(self) -> int:
         return self.__cell_types_count
