@@ -256,7 +256,7 @@ class Game:
     def ascend_rows(self) -> int:
         falling_columns_count: int = 0
         for col in range(self.column_count):
-            for row in range(self.row_count - 1, 0, -1):
+            for row in range(self.row_count - 1, -1, -1):
                 if self.cell_type(row, col) >= 0:
                     continue
                 falling_columns_count += 1
