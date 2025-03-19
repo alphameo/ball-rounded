@@ -1,5 +1,13 @@
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtWidgets import QLabel, QMainWindow
+from PyQt5.QtWidgets import (
+    QBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QVBoxLayout,
+    QWidget,
+)
 
 from game import Game
 from game_renderer import GameRenderer
@@ -7,18 +15,54 @@ from game_renderer import GameRenderer
 
 class MainWindow(QMainWindow):
     __game_window: GameRenderer
+    __label_wrapper: QLabel
     __timer: QTimer = QTimer()
+    __label_score: QLabel
+    __g_width: int
+    __g_height: int
 
     def __init__(self, width=300, height=500) -> None:
         super().__init__()
+        self.__g_width = width
+        self.__g_height = height
+        self.setWindowTitle("B'All-Rounded Game")
 
+        self.__init_game()
+
+        main_widget: QWidget = QWidget()
+        self.setCentralWidget(main_widget)
+
+        layout: QHBoxLayout = QHBoxLayout(main_widget)
+
+        self.__label_wrapper = QLabel()
+        self.__label_wrapper.setPixmap(self.__game_window)
+
+        layout.addWidget(self.__label_wrapper)
+
+        font = self.font()
+        font.setPointSize(18)
+        self.__label_score = QLabel()
+        self.__label_score.setFont(font)
+        menu_layout: QVBoxLayout = QVBoxLayout()
+        menu_layout.addWidget(self.__label_score)
+
+        button = QPushButton(text="RESTART GAME")
+        button.setFont(font)
+        button.clicked.connect(self.__restart_game)
+        menu_layout.addWidget(button)
+
+        layout.addLayout(menu_layout)
+        self.upd()
+
+    def __init_game(self) -> None:
         game: Game = Game(cell_types_count=4)
         game.shuffle_field(100)
-        self.label: QLabel = QLabel()
-        self.__game_window = GameRenderer(width, height, game)
+        self.__game_window = GameRenderer(self.__g_width, self.__g_height, game)
 
-        self.label.setPixmap(self.__game_window)
-        self.setCentralWidget(self.label)
+    def __restart_game(self) -> None:
+        self.__init_game()
+        self.upd()
+        self.__timer.stop()
 
     def keyPressEvent(self, event) -> None:
 
@@ -84,4 +128,7 @@ class MainWindow(QMainWindow):
 
     def upd(self):
         self.__game_window.repaint()
-        self.label.setPixmap(self.__game_window)
+        self.__label_wrapper.setPixmap(self.__game_window)
+        self.__label_score.setText(
+            f"score: {self.__game_window.game.quant_destructions}"
+        )
