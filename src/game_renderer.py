@@ -5,11 +5,14 @@ from PyQt5.QtCore import QRectF, Qt
 from game import Game
 
 DEFAULT_COLOR_PALLETE: list[Qt.GlobalColor] = [
+    Qt.GlobalColor.cyan,
     Qt.GlobalColor.magenta,
-    Qt.GlobalColor.blue,
+    Qt.GlobalColor.yellow,
     Qt.GlobalColor.red,
     Qt.GlobalColor.green,
-    Qt.GlobalColor.cyan,
+    Qt.GlobalColor.blue,
+    Qt.GlobalColor.darkCyan,
+    Qt.GlobalColor.darkMagenta,
 ]
 
 SELECTION_COLOR: Qt.GlobalColor = Qt.GlobalColor.black
