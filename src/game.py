@@ -1,6 +1,5 @@
 from random import randint
 
-import util.utils as utl
 
 CLUSTER_SIZE: int = 3
 
@@ -239,7 +238,7 @@ class Game:
         for selection_cell in self.__selection():
             candidates: set[Cell] = self.detect_cluster(selection_cell)
             if candidates.__len__() >= CLUSTER_SIZE:
-                utl.merge_set(collector, candidates)
+                collector.update(candidates)
 
         return collector
 
@@ -250,7 +249,7 @@ class Game:
             for c in range(self.column_count):
                 candidates: set[Cell] = self.detect_cluster((Cell(r, c)))
                 if candidates.__len__() >= CLUSTER_SIZE:
-                    utl.merge_set(collector, candidates)
+                    collector.update(candidates)
 
         return collector
 
