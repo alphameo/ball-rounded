@@ -1,6 +1,5 @@
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import (
-    QBoxLayout,
     QHBoxLayout,
     QLabel,
     QMainWindow,
