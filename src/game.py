@@ -1,4 +1,5 @@
 from random import randint
+from typing import override
 
 
 CLUSTER_SIZE: int = 3
@@ -12,6 +13,7 @@ class Cell:
         self.row = row
         self.col = col
 
+    @override
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, self.__class__):
             return False
@@ -19,12 +21,15 @@ class Cell:
             return True
         return False
 
+    @override
     def __hash__(self) -> int:
         return hash((self.row, self.col))
 
+    @override
     def __str__(self) -> str:
         return f"Cell(r={self.row}, c={self.col})"
 
+    @override
     def __repr__(self) -> str:
         return self.__str__()
 
@@ -32,12 +37,14 @@ class Cell:
 class Game:
 
     __field: list[list[int]]
-    __cell_types_count: int
+    __cell_types_count: int = 1
     __quant_destructions: int = 0
 
     __selected_cell: Cell = Cell(0, 0)
 
-    def __init__(self, row_count=10, col_count=6, cell_types_count=1):
+    def __init__(
+        self, row_count: int = 10, col_count: int = 6, cell_types_count: int = 1
+    ):
         self.cell_types_count = cell_types_count
         self.generate_field(row_count, col_count)
 
@@ -78,7 +85,7 @@ class Game:
     def cell_type(self, row: int, col: int) -> int:
         return self.__field[row][col]
 
-    def generate_field(self, row_count, col_count) -> None:
+    def generate_field(self, row_count: int, col_count: int) -> None:
         if row_count <= 0:
             raise ValueError("col_count should be > 0")
 
@@ -170,7 +177,7 @@ class Game:
             f[r + 1][c + 1],
         )
 
-    def __cell_neighbours(self, cell: Cell) -> list:
+    def __cell_neighbours(self, cell: Cell) -> list[Cell]:
         neighbours: list[Cell] = list()
 
         if cell.row > 0:

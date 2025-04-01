@@ -38,7 +38,7 @@ class GameRenderer(QtGui.QPixmap):
         width: int,
         height: int,
         game: Game,
-        color_pallete=DEFAULT_COLOR_PALLETE,
+        color_pallete: list[Qt.GlobalColor] = DEFAULT_COLOR_PALLETE,
     ):
         super().__init__(width, height)
 
@@ -57,10 +57,6 @@ class GameRenderer(QtGui.QPixmap):
     def color_pallete(self, color_pallete: list[Qt.GlobalColor]) -> None:
         if color_pallete.__len__() == 0:
             raise ValueError("count of colors in color_pallete should be > 0")
-        if not isinstance(color_pallete, list) or not isinstance(
-            color_pallete[0], Qt.GlobalColor
-        ):
-            raise TypeError("color_pallete should be of type list[Qt.GlobalColor]")
 
         self.__validate_colors(color_pallete)
 
@@ -107,7 +103,7 @@ class GameRenderer(QtGui.QPixmap):
             for c in range(self.column_count):
                 color = self.__cell_color(r, c)
                 self.__draw_cell(r, c, color, painter)
-        painter.end()
+        _ = painter.end()
 
     def __draw_cell(
         self,

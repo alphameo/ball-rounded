@@ -1,4 +1,6 @@
+from typing import override
 from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -20,7 +22,7 @@ class MainWindow(QMainWindow):
     __g_width: int
     __g_height: int
 
-    def __init__(self, width=300, height=500) -> None:
+    def __init__(self, width: int = 300, height: int = 500) -> None:
         super().__init__()
         self.__g_width = width
         self.__g_height = height
@@ -47,7 +49,7 @@ class MainWindow(QMainWindow):
 
         button = QPushButton(text="RESTART GAME")
         button.setFont(font)
-        button.clicked.connect(self.__restart_game)
+        _ = button.clicked.connect(self.__restart_game)
         menu_layout.addWidget(button)
 
         layout.addLayout(menu_layout)
@@ -63,8 +65,8 @@ class MainWindow(QMainWindow):
         self.upd()
         self.__timer.stop()
 
+    @override
     def keyPressEvent(self, event) -> None:
-
         g: Game = self.__game_window.game
         if event.key() == Qt.Key.Key_Escape:
             g.deselect_cell()
@@ -101,7 +103,7 @@ class MainWindow(QMainWindow):
 
     def animated_destruction(self, time_sleep_ms: int) -> None:
         self.upd()
-        destroyed = self.__game_window.game.destroy_field_clusters()
+        destroyed: int = self.__game_window.game.destroy_field_clusters()
         QTimer.singleShot(time_sleep_ms * 3, self.upd)
         self.animate_ascending(destroyed, time_sleep_ms)
 
